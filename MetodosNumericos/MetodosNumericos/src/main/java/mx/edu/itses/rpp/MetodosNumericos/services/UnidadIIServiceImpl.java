@@ -3,6 +3,7 @@ package mx.edu.itses.rpp.MetodosNumericos.services;
 import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import mx.edu.itses.rpp.MetodosNumericos.domain.Biseccion;
+import mx.edu.itses.rpp.MetodosNumericos.domain.PuntoFijo;
 import mx.edu.itses.rpp.MetodosNumericos.domain.ReglaFalsa;
 import org.springframework.stereotype.Service;
 
@@ -117,4 +118,43 @@ public ArrayList<ReglaFalsa> AlgoritmoReglaFalsa(ReglaFalsa reglafalsa) {
     }
     return respuestaReglaFalsa;
 }
+
+   @Override
+public ArrayList<PuntoFijo> AlgoritmoPuntoFijo(PuntoFijo puntofijo) {
+        ArrayList<PuntoFijo> respuestaPuntoFijo = new ArrayList<>();
+        double Xi = puntofijo.getXi();
+        double XiAnterior = Xi;
+        double GXi, Ea = 100;
+
+        if (puntofijo.getGx() == null || puntofijo.getGx().isEmpty()) {
+            throw new IllegalArgumentException("La función g(x) es requerida para el método de punto fijo");
+        }
+
+        for (int i = 1; i <= puntofijo.getIteracionesMaximas(); i++) {
+            GXi = Funciones.Ecuacion(puntofijo.getGx(), Xi);
+
+            if (i > 1) {
+                Ea = Math.abs((Xi - XiAnterior) / Xi) * 100;
+            }
+
+            PuntoFijo renglon = new PuntoFijo();
+            renglon.setFX(puntofijo.getFX());
+            renglon.setXi(Xi);
+            renglon.setGXi(GXi);
+            renglon.setEa(Ea);
+            renglon.setGx(puntofijo.getGx());
+
+            respuestaPuntoFijo.add(renglon);
+
+            if ((i > 1 && Ea <= puntofijo.getEa()) || Math.abs(GXi - Xi) < 1e-10) {
+                break;
+            }
+
+            XiAnterior = Xi;
+            Xi = GXi;
+        }
+
+        return respuestaPuntoFijo;
+    }
 }
+
