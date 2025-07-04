@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import mx.edu.itses.rpp.MetodosNumericos.domain.Biseccion;
 import mx.edu.itses.rpp.MetodosNumericos.domain.PuntoFijo;
 import mx.edu.itses.rpp.MetodosNumericos.domain.ReglaFalsa;
+import mx.edu.itses.rpp.MetodosNumericos.domain.Secante;
+import mx.edu.itses.rpp.MetodosNumericos.domain.SecanteModificado;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -156,5 +158,110 @@ public ArrayList<PuntoFijo> AlgoritmoPuntoFijo(PuntoFijo puntofijo) {
 
         return respuestaPuntoFijo;
     }
+
+   @Override
+    public ArrayList<Secante> AlgoritmoSecante(Secante secante) {
+        ArrayList<Secante> respuesta = new ArrayList<>();
+
+        double Xi_1 = secante.getXi_1();
+        double Xi = secante.getXi();   
+        double Xi1;                     
+        double F_Xi_1, F_Xi, Ea = 100;
+
+        int maxIteraciones = secante.getIteracionesMaximas();
+
+        for (int i = 1; i <= maxIteraciones; i++) {
+            F_Xi_1 = Funciones.Ecuacion(secante.getFX(), Xi_1);
+            F_Xi = Funciones.Ecuacion(secante.getFX(), Xi);
+
+
+            
+            if ((F_Xi_1 - F_Xi) == 0) {
+                System.out.println("Denominador cercano a cero, deteniendo iteración.");
+                break;
+            }
+
+            Xi1 = Xi - (F_Xi * (Xi_1 - Xi)) / (F_Xi_1 - F_Xi);
+
+           
+            
+            
+            
+            
+            
+            if (i != 1) {
+                Ea = Math.abs((Xi1 - Xi) / Xi1) * 100;
+            }
+
+            Secante iter = new Secante();
+            iter.setXi(Xi);
+            iter.setXi_1(Xi_1);
+            iter.setXi1(Xi1);
+            iter.setFXi(F_Xi);
+            iter.setF_Xi_1(F_Xi_1);
+            iter.setEa(Ea);
+            iter.setIteracionesMaximas(i);
+            iter.setFX(secante.getFX());
+
+
+         
+            respuesta.add(iter);
+
+          
+            if (Ea <= secante.getEa()) {
+                break;
+            }
+            Xi_1 = Xi;
+            Xi = Xi1;
+        }
+
+        return respuesta;
+    }
+
+   @Override
+public ArrayList<SecanteModificado> AlgoritmoSecanteModificado(SecanteModificado secantemodificado) {
+    ArrayList<SecanteModificado> respuesta = new ArrayList<>();
+
+    double Xi = secantemodificado.getXi();
+    double Xi1;
+    double Ea = 100;
+    int maxIteraciones = secantemodificado.getIteracionesMaximas();
+    double sigma = secantemodificado.getSigma();
+
+    for (int i = 1; i <= maxIteraciones; i++) {
+        double deltaXi = sigma * Xi;
+        double FXi = Funciones.Ecuacion(secantemodificado.getFX(), Xi);
+        double FXiSigma = Funciones.Ecuacion(secantemodificado.getFX(), Xi + deltaXi);
+
+        double denominador = FXiSigma - FXi;
+
+
+        Xi1 = Xi - (deltaXi * FXi) / denominador;
+
+        if (i != 1) {
+            Ea = Funciones.ErrorRelativo(Xi1, Xi);
+        }
+
+        SecanteModificado iter = new SecanteModificado();
+        iter.setXi(Xi);
+        iter.setXi1(Xi1);
+        iter.setFXi(FXi);
+        iter.setFXiSigma(FXiSigma);
+        iter.setEa(Ea);
+        iter.setIteracionesMaximas(i);
+        iter.setFX(secantemodificado.getFX());
+        iter.setSigma(sigma);
+
+        respuesta.add(iter);
+
+        if (Ea <= secantemodificado.getEa()) {
+            break;
+        }
+
+        Xi = Xi1;
+    }
+
+    return respuesta;
+}
 }
 

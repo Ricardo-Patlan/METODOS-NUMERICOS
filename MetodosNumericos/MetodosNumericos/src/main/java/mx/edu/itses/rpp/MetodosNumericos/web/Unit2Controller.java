@@ -3,6 +3,8 @@ import lombok.extern.slf4j.Slf4j;
 import mx.edu.itses.rpp.MetodosNumericos.domain.Biseccion;
 import mx.edu.itses.rpp.MetodosNumericos.domain.PuntoFijo;
 import mx.edu.itses.rpp.MetodosNumericos.domain.ReglaFalsa;
+import mx.edu.itses.rpp.MetodosNumericos.domain.Secante;
+import mx.edu.itses.rpp.MetodosNumericos.domain.SecanteModificado;
 import mx.edu.itses.rpp.MetodosNumericos.services.UnidadIIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,11 +19,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class Unit2Controller {
 
     @Autowired
-    private UnidadIIService bisectionservice;
-    @Autowired
-      private UnidadIIService reglafalsaService;
-     @Autowired
-      private UnidadIIService puntofijoService;
+    private UnidadIIService serService;
+
 
 
     @GetMapping("unit2/formbisection")
@@ -39,7 +38,7 @@ public class Unit2Controller {
 
         //  double valorFX = Funciones.Ecuacion(bisection.getFX(), bisection.getXL());
       //  log.info("Valor de FX: " + bisection.getFX());
-        var solveBisection = bisectionservice.AlgoritmoBiseccion(bisection);
+        var solveBisection = serService.AlgoritmoBiseccion(bisection);
 
         //log.info("Arreglo: " + solveBisection);
         model.addAttribute("solveBisection", solveBisection);
@@ -57,7 +56,7 @@ public class Unit2Controller {
     }
 @PostMapping("unit2/solveReglaFalsa")
 public String solveReglaFalsa(ReglaFalsa reglafalsa, Model model) {
-    var solveReglaFalsa = reglafalsaService.AlgoritmoReglaFalsa(reglafalsa);
+    var solveReglaFalsa = serService.AlgoritmoReglaFalsa(reglafalsa);
     model.addAttribute("solveReglaFalsa", solveReglaFalsa);
     return "unit2/reglafalsa/solveReglaFalsa";
 }
@@ -73,10 +72,39 @@ public String solveReglaFalsa(ReglaFalsa reglafalsa, Model model) {
 @PostMapping("/unit2/solvePuntoFijo")
 public String solvePuntoFijo(@ModelAttribute PuntoFijo puntofijo, Model model) {
     System.out.println("gx recibida: " + puntofijo.getGx()); // depuración
-    var resultado = puntofijoService.AlgoritmoPuntoFijo(puntofijo);
+    var resultado = serService.AlgoritmoPuntoFijo(puntofijo);
     model.addAttribute("solvePuntoFijo", resultado);
     return "unit2/puntofijo/solvePuntoFijo"; // nombre del HTML de resultados
 }
+@GetMapping("unit2/formSecante")
+    public String formSecante(Model model) {
 
+          Secante secante = new Secante();
 
+        model.addAttribute("secante", secante);
+        return "unit2/secante/formSecante";
+    }
+@PostMapping("unit2/solveSecante")
+public String solveSecante(Secante secante, Model model) {
+    var solveSecante = serService.AlgoritmoSecante(secante);
+    model.addAttribute("solveSecante", solveSecante);
+    return "unit2/secante/solveSecante";
 }
+
+
+@GetMapping("unit2/formSecanteModificado")
+    public String formSecanteModificado(Model model) {
+
+          SecanteModificado secantemodificado = new SecanteModificado();
+
+        model.addAttribute("secantemodificado", secantemodificado);
+        return "unit2/secantemodificado/formSecanteModificado";
+    }
+@PostMapping("unit2/solveSecanteModificado")
+public String solveSecanteModificado(SecanteModificado secantemodificado, Model model) {
+    var solveSecanteModificado = serService.AlgoritmoSecanteModificado(secantemodificado);
+    model.addAttribute("solveSecanteModificado", solveSecanteModificado);
+    return "unit2/secantemodificado/solveSecanteModificado";
+}
+}
+
