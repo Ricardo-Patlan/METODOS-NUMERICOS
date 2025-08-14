@@ -1,6 +1,7 @@
 package mx.edu.itses.rpp.MetodosNumericos.web;
 import lombok.extern.slf4j.Slf4j;
 import mx.edu.itses.rpp.MetodosNumericos.domain.Biseccion;
+import mx.edu.itses.rpp.MetodosNumericos.domain.NewtonRaphson;
 import mx.edu.itses.rpp.MetodosNumericos.domain.PuntoFijo;
 import mx.edu.itses.rpp.MetodosNumericos.domain.ReglaFalsa;
 import mx.edu.itses.rpp.MetodosNumericos.domain.Secante;
@@ -60,6 +61,25 @@ public String solveReglaFalsa(ReglaFalsa reglafalsa, Model model) {
     model.addAttribute("solveReglaFalsa", solveReglaFalsa);
     return "unit2/reglafalsa/solveReglaFalsa";
 }
+
+
+
+@GetMapping("unit2/formNewtonRaphson")
+    public String formNewtonRaphson(Model model) {
+
+          NewtonRaphson newtonraphson = new NewtonRaphson();
+
+        model.addAttribute("newtonraphson", newtonraphson);
+        return "unit2/newtonraphson/formNewtonRaphson";
+    }
+@PostMapping("unit2/solveNewtonRaphson")
+public String solveNewtonRaphson(NewtonRaphson newtonraphson, Model model) {
+    var solveNewtonRaphson = serService.AlgoritmoNewtonRaphson(newtonraphson);
+    model.addAttribute("solveNewtonRaphson", solveNewtonRaphson);
+    return "unit2/newtonraphson/solveNewtonRaphson";
+}
+
+
 
   @GetMapping("unit2/formPuntoFijo")
     public String formPuntoFijo(Model model) {
