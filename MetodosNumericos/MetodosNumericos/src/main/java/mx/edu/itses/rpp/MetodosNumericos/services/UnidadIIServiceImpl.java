@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class UnidadIIServiceImpl implements UnidadIIService {
+public abstract class UnidadIIServiceImpl implements UnidadIIService {
 
     @Override
     public ArrayList<Biseccion> AlgoritmoBiseccion(Biseccion biseccion) {
@@ -160,6 +160,7 @@ public class UnidadIIServiceImpl implements UnidadIIService {
         return respuestaPuntoFijo;
     }
 
+    @Override
     public ArrayList<NewtonRaphson> AlgoritmoNewtonRaphson(NewtonRaphson newtonRaphson) {
         ArrayList<NewtonRaphson> respuestaNewtonRaphson = new ArrayList<>();
         double Xi, Xii = 0, Xia = 0, FXi, FXii, Ea = 100;

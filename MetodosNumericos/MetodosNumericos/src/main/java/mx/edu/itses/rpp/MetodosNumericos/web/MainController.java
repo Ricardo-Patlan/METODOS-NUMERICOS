@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 @Slf4j
-//Get : Obtiene los datos de la web para poder acceder
-//Post: Envia los datos recabados al servidor
+
 public class MainController {
 
     @GetMapping("/")

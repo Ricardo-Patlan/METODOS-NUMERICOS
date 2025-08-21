@@ -3,7 +3,10 @@ package mx.edu.itses.rpp.MetodosNumericos.services;
 import java.util.ArrayList;
 import lombok.extern.slf4j.Slf4j;
 import mx.edu.itses.rpp.MetodosNumericos.domain.Gauss;
+import mx.edu.itses.rpp.MetodosNumericos.domain.GaussJordan;
+import mx.edu.itses.rpp.MetodosNumericos.domain.GaussSeidel;
 import mx.edu.itses.rpp.MetodosNumericos.domain.ReglaCramer;
+import mx.edu.itses.rpp.MetodosNumericos.domain.jacobi;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -250,5 +253,159 @@ public class UnidadIIIServiceImpl implements UnidadIIIService {
             sb.append(" = ").append(String.format("%.4f", resultados[i])).append("\n");
         }
         return sb.toString();
+    }
+
+
+    @Override
+    public ArrayList<jacobi> AlgoritmoJacobi(jacobi jacobi) {
+         int n = jacobi.getN();
+    double[][] matriz = jacobi.getMatriz(); 
+    double[] x = jacobi.getX0().clone();    
+    double[] xNuevo = new double[n];
+
+    int maxIter = jacobi.getIteracionesMax();
+    double tol = jacobi.getTol();
+
+    ArrayList<jacobi> pasos = new ArrayList<>();
+
+    for (int k = 0; k < maxIter; k++) {
+        for (int i = 0; i < n; i++) {
+            double suma = 0;
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    suma += matriz[i][j] * x[j];
+                }
+            }
+            xNuevo[i] = (matriz[i][n] - suma) / matriz[i][i];
+        }
+
+        jacobi paso = new jacobi();
+        paso.setN(n);
+        paso.setMatriz(clonarMatriz(matriz, n));
+        paso.setX0(xNuevo.clone()); 
+        pasos.add(paso);
+
+        double error = 0;
+        for (int i = 0; i < n; i++) {
+            error += Math.abs(xNuevo[i] - x[i]);
+        }
+        if (error < tol) {
+            break;
+        }
+
+        x = xNuevo.clone();
+    }
+
+    jacobi finalStep = new jacobi();
+    finalStep.setN(n);
+    finalStep.setMatriz(clonarMatriz(matriz, n));
+    finalStep.setResultados(xNuevo.clone());
+    pasos.add(finalStep);
+
+    return pasos;
+    }
+
+    @Override
+    public ArrayList<GaussSeidel> AlgoritmoGaussSeidel(GaussSeidel gaussseidel) {
+         int n = gaussseidel.getN();
+    double[][] matriz = gaussseidel.getMatriz();  
+    double[] x = gaussseidel.getX0().clone();      
+
+    int maxIter = gaussseidel.getIteraciones();
+    double tol = gaussseidel.getTolerancia();
+
+    ArrayList<GaussSeidel> pasos = new ArrayList<>();
+
+    for (int k = 0; k < maxIter; k++) {
+        double[] xAnterior = x.clone();
+
+        for (int i = 0; i < n; i++) {
+            double suma = 0;
+            for (int j = 0; j < n; j++) {
+                if (i != j) {
+                    suma += matriz[i][j] * x[j]; 
+                }
+            }
+            x[i] = (matriz[i][n] - suma) / matriz[i][i];
+        }
+
+        GaussSeidel paso = new GaussSeidel();
+        paso.setN(n);
+        paso.setMatriz(clonarMatriz(matriz, n));
+        paso.setX0(x.clone());
+        pasos.add(paso);
+
+        double error = 0;
+        for (int i = 0; i < n; i++) {
+            error += Math.abs(x[i] - xAnterior[i]);
+        }
+        if (error < tol) break;
+    }
+
+    GaussSeidel finalStep = new GaussSeidel();
+    finalStep.setN(n);
+    finalStep.setMatriz(clonarMatriz(matriz, n));
+    finalStep.setX0(x.clone()); 
+    pasos.add(finalStep);
+
+    return pasos;
+    }
+
+  private double[][] clonarMatriz(double[][] original, int n) {
+    double[][] copia = new double[n][n + 1];
+    for (int i = 0; i < n; i++) {
+        System.arraycopy(original[i], 0, copia[i], 0, n + 1);
+    }
+    return copia;
+}
+  
+  private GaussJordan clonarMatriz(GaussJordan model, double[][] matrizOriginal) {
+    int n = model.getN();
+    double[][] copia = new double[n][n + 1];
+    for (int i = 0; i < n; i++) {
+        System.arraycopy(matrizOriginal[i], 0, copia[i], 0, n + 1);
+    }
+    GaussJordan paso = new GaussJordan();
+    paso.setN(n);
+    paso.setMatriz(copia);
+    return paso;
+}
+
+    @Override
+    public ArrayList<GaussJordan> AlgoritmoGaussJordan(GaussJordan gaussJordan) {
+        int n = gaussJordan.getN();
+    double[][] matriz = gaussJordan.getMatriz();
+    ArrayList<GaussJordan> pasos = new ArrayList<>();
+
+    pasos.add(clonarMatriz(gaussJordan, matriz));
+
+    for (int k = 0; k < n; k++) {
+        double pivote = matriz[k][k];
+        for (int j = 0; j <= n; j++) {
+            matriz[k][j] /= pivote;
+        }
+
+        for (int i = 0; i < n; i++) {
+            if (i != k) {
+                double factor = matriz[i][k];
+                for (int j = 0; j <= n; j++) {
+                    matriz[i][j] -= factor * matriz[k][j];
+                }
+            }
+        }
+
+        pasos.add(clonarMatriz(gaussJordan, matriz)); 
+    }
+
+    double[] resultados = new double[n];
+    for (int i = 0; i < n; i++) {
+        resultados[i] = matriz[i][n];
+    }
+
+    GaussJordan finalStep = clonarMatriz(gaussJordan, matriz);
+    finalStep.setResultados(resultados);
+    pasos.add(finalStep);
+
+    return pasos;
     }
 }

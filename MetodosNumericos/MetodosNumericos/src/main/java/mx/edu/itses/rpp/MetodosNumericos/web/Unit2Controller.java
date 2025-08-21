@@ -1,11 +1,15 @@
 package mx.edu.itses.rpp.MetodosNumericos.web;
 import lombok.extern.slf4j.Slf4j;
 import mx.edu.itses.rpp.MetodosNumericos.domain.Biseccion;
+import mx.edu.itses.rpp.MetodosNumericos.domain.GaussJordan;
+import mx.edu.itses.rpp.MetodosNumericos.domain.GaussSeidel;
 import mx.edu.itses.rpp.MetodosNumericos.domain.NewtonRaphson;
 import mx.edu.itses.rpp.MetodosNumericos.domain.PuntoFijo;
 import mx.edu.itses.rpp.MetodosNumericos.domain.ReglaFalsa;
 import mx.edu.itses.rpp.MetodosNumericos.domain.Secante;
 import mx.edu.itses.rpp.MetodosNumericos.domain.SecanteModificado;
+import mx.edu.itses.rpp.MetodosNumericos.domain.jacobi;
+import mx.edu.itses.rpp.MetodosNumericos.services.UnidadIIIService;
 import mx.edu.itses.rpp.MetodosNumericos.services.UnidadIIService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,11 +25,11 @@ public class Unit2Controller {
 
     @Autowired
     private UnidadIIService serService;
+    
 
 
-
-    @GetMapping("unit2/formbisection")
-    public String formBisection(Model model) {
+@GetMapping("unit2/formbisection")
+public String formBisection(Model model) {
 
         Biseccion bisection = new Biseccion();
 
@@ -34,8 +38,8 @@ public class Unit2Controller {
         return "unit2/bisection/formbisection";
     }
 
-    @PostMapping("unit2/solvebisection")
-    public String solvebisection(Biseccion bisection, Model model) {
+@PostMapping("unit2/solvebisection")
+public String solvebisection(Biseccion bisection, Model model) {
 
         //  double valorFX = Funciones.Ecuacion(bisection.getFX(), bisection.getXL());
       //  log.info("Valor de FX: " + bisection.getFX());
@@ -45,10 +49,10 @@ public class Unit2Controller {
         model.addAttribute("solveBisection", solveBisection);
 
         return "unit2/bisection/solvebisection";
-    }
+    }   
     
-    @GetMapping("unit2/formReglaFalsa")
-    public String formReglaFalsa(Model model) {
+@GetMapping("unit2/formReglaFalsa")
+public String formReglaFalsa(Model model) {
 
           ReglaFalsa reglafalsa = new ReglaFalsa();
 
@@ -81,8 +85,8 @@ public String solveNewtonRaphson(NewtonRaphson newtonraphson, Model model) {
 
 
 
-  @GetMapping("unit2/formPuntoFijo")
-    public String formPuntoFijo(Model model) {
+@GetMapping("unit2/formPuntoFijo")
+public String formPuntoFijo(Model model) {
 
           PuntoFijo puntofijo = new PuntoFijo();
 
@@ -125,6 +129,58 @@ public String solveSecanteModificado(SecanteModificado secantemodificado, Model 
     var solveSecanteModificado = serService.AlgoritmoSecanteModificado(secantemodificado);
     model.addAttribute("solveSecanteModificado", solveSecanteModificado);
     return "unit2/secantemodificado/solveSecanteModificado";
+}
+
+@GetMapping("/unit2/formgaussjordan")
+public String formGaussJordan(Model model) {
+    GaussJordan gaussjordan = new GaussJordan();
+    model.addAttribute("gaussjordan", gaussjordan);
+    return "/unit3/gaussjordan/formgaussjordan";
+}
+
+@PostMapping("/unit3/solvegaussjordan")
+public String solveGaussJordan(GaussJordan gaussjordan, Model model) {
+    var solveGaussJordan = serService.AlgoritmoGaussJordan(gaussjordan);
+
+    log.info("Resultado Gauss-Jordan: " + solveGaussJordan);
+    model.addAttribute("pasos", solveGaussJordan);
+
+    return "/unit2/gaussjordan/solvegaussjordan";
+}
+
+@GetMapping("/unit2/formjacobi")
+public String formJacobi(Model model) {
+    jacobi jacobi = new jacobi();
+    model.addAttribute("jacobi", jacobi);
+    return "/unit3/jacobi/formjacobi";
+}
+
+@PostMapping("/unit2/solvejacobi")
+public String solveJacobi(jacobi jacobi, Model model) {
+    var solveJacobi = serService.AlgoritmoJacobi(jacobi);
+
+    log.info("Resultado Jacobi: " + solveJacobi);
+    model.addAttribute("pasos", solveJacobi);
+    model.addAttribute("n", jacobi.getN());
+
+    return "/unit2/jacobi/solvejacobi";
+}
+
+@GetMapping("/unit2/formseidel")
+public String formSeidel(Model model) {
+    GaussSeidel gaussSeidel = new GaussSeidel();
+    model.addAttribute("gaussSeidel", gaussSeidel);
+    return "/unit3/seidel/formseidel";
+}
+
+@PostMapping("/unit2/solveseidel")
+public String solveSeidel(GaussSeidel gaussSeidel, Model model) {
+    var solveSeidel = serService.AlgoritmoGaussSeidel(gaussSeidel);
+
+    log.info("Resultado Gauss-Seidel: " + solveSeidel);
+    model.addAttribute("pasos", solveSeidel);
+
+    return "/unit2/seidel/solveseidel";
 }
 }
 
