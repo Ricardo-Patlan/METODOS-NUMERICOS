@@ -1,12 +1,19 @@
+
 package mx.edu.itses.rpp.MetodosNumericos.domain;
+
+import java.util.ArrayList;
 import lombok.Data;
+
 @Data
 public class GaussSeidel {
-       private int n;                
-    private double[][] matriz;   
-    private double[] x0;           
-    private int iteraciones;       
-    private double tolerancia;     
-    
-    
+      private int MN;
+    private ArrayList<Double> matrizA;
+    private ArrayList<Double> vectorB;
+    private ArrayList<Double> vectorX;
+    private ArrayList<Double> vectorInicial;
+    private ArrayList<String> pasos;
+    private double tolerancia;
+    private int maxIteraciones;
+    private int iteracionesRealizadas;
+    private boolean convergio;    
 }

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>Métodos Numéricos</title>
+
+        <!-- Bootstrap CSS -->
+        <link 
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
+            rel="stylesheet" 
+            integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
+            crossorigin="anonymous"
+            >   
+
+        <!-- Bootstrap JS and dependencies -->
+        <script 
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+            crossorigin="anonymous"
+        ></script>
+        
+      
+     
+    </head>
+
+    <body>
+        <div class="container">
+            <nav th:replace="/layout/template :: menu"> </nav>
+            <div th:replace="/layout/template :: bannerunit3"></div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="/unit3">Sistemas Lineales</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Resultado Gauss-Seidel</li>
+                </ol>
+            </nav>
+
+            <div class="container">
+                <h1 class="text">Método Iterativo: Gauss-Seidel</h1>
+
+                <div class="row justify-content-start">
+                    <div class="col-4">
+                        <p class="text">Tamaño del Sistema</p>
+                    </div>
+                    <div class="col-4">
+                        <p th:text="${solveGaussSeidel.MN}">MN</p>
+                    </div>
+                </div>
+                
+                <!-- Resultado de convergencia -->
+                <div class="row">
+                    <div class="col-12">
+                        <div th:class="${solveGaussSeidel.convergio} ? 'convergencia-si' : 'convergencia-no'" class="text-center">
+                            <h4 th:if="${solveGaussSeidel.convergio}"> CONVERGENCIA ALCANZADA</h4>
+                            <h4 th:unless="${solveGaussSeidel.convergio}"> NO CONVERGIÓ</h4>
+                            
+                            <div th:if="${solveGaussSeidel.convergio}">
+                                <h5>Solución Final (Gauss-Seidel):</h5>
+                                <div class="row">
+                                    <div th:each="sol, stat : ${solveGaussSeidel.vectorX}" class="col-md-3 col-6">
+                                        <h5>x<sub th:text="${stat.index + 1}"></sub> = <span th:text="${#numbers.formatDecimal(sol, 1, 6)}"></span></h5>
+                                    </div>
+                                </div>
+                                <p><strong>Iteraciones realizadas:</strong> <span th:text="${solveGaussSeidel.iteracionesRealizadas}"></span></p>
+                                <small> Convergencia más rápida que Jacobi</small>
+                            </div>
+                            
+                            <div th:unless="${solveGaussSeidel.convergio}">
+                                <p>El método no convergió en <span th:text="${solveGaussSeidel.maxIteraciones}"></span> iteraciones.</p>
+                                <p><small> Tip: Verifica que la matriz sea diagonalmente dominante</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sistema original -->
+                <div class="row">
+                    <div class="container text-center">
+                        <!-- Sistema 2x2 -->
+                        <div class="col" th:if="${solveGaussSeidel.MN}==2">
+                            <div class="row align-items-start">
+                                <div class="col">
+                                    <p><strong>MATRIZ A (Original)</strong></p>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[0]}"></p>
+                                        </div>
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[1]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[2]}"></p>
+                                        </div>
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[3]}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <p><strong>Vector B</strong></p>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorB[0]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorB[1]}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <p><strong>X⁰ inicial</strong></p>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorInicial[0]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorInicial[1]}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <p><strong>Solución (X)</strong></p>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${#numbers.formatDecimal(solveGaussSeidel.vectorX[0], 1, 6)}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${#numbers.formatDecimal(solveGaussSeidel.vectorX[1], 1, 6)}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sistema 3x3 -->
+                        <div class="col" th:if="${solveGaussSeidel.MN}==3">
+                            <div class="row align-items-start">
+                                <div class="col">
+                                    <p><strong>MATRIZ A (Original)</strong></p>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[0]}"></p>
+                                        </div>
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[1]}"></p>
+                                        </div>
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[2]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[3]}"></p>
+                                        </div>
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[4]}"></p>
+                                        </div>
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[5]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[6]}"></p>
+                                        </div>
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[7]}"></p>
+                                        </div>
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.matrizA[8]}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <p><strong>Vector B</strong></p>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorB[0]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorB[1]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorB[2]}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <p><strong>X⁰ inicial</strong></p>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorInicial[0]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorInicial[1]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${solveGaussSeidel.vectorInicial[2]}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <p><strong>Solución (X)</strong></p>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${#numbers.formatDecimal(solveGaussSeidel.vectorX[0], 1, 6)}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${#numbers.formatDecimal(solveGaussSeidel.vectorX[1], 1, 6)}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col">
+                                            <p th:text="${#numbers.formatDecimal(solveGaussSeidel.vectorX[2], 1, 6)}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Sistema 4x4 -->
+                        <div class="col" th:if="${solveGaussSeidel.MN}==4">
+                            <div class="row align-items-start">
+                                <div class="col">
+                                    <p><strong>MATRIZ A (Original)</strong></p>
+                                    <div class="row align-items-start">
+                                        <div class="col" th:each="i : ${#numbers.sequence(0,3)}">
+                                            <p th:text="${solveGaussSeidel.matrizA[i]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col" th:each="i : ${#numbers.sequence(4,7)}">
+                                            <p th:text="${solveGaussSeidel.matrizA[i]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col" th:each="i : ${#numbers.sequence(8,11)}">
+                                            <p th:text="${solveGaussSeidel.matrizA[i]}"></p>
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-start">
+                                        <div class="col" th:each="i : ${#numbers.sequence(12,15)}">
+                                            <p th:text="${solveGaussSeidel.matrizA[i]}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <p><strong>Vector B</strong></p>
+                                    <div class="row align-items-start" th:each="resultado : ${solveGaussSeidel.vectorB}">
+                                        <div class="col">
+                                            <p th:text="${#numbers.formatDecimal(resultado, 1, 4)}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <p><strong>X⁰ inicial</strong></p>
+                                    <div class="row align-items-start" th:each="inicial : ${solveGaussSeidel.vectorInicial}">
+                                        <div class="col">
+                                            <p th:text="${#numbers.formatDecimal(inicial, 1, 4)}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-2">
+                                    <p><strong>Solución (X)</strong></p>
+                                    <div class="row align-items-start" th:each="sol : ${solveGaussSeidel.vectorX}">
+                                        <div class="col">
+                                            <p th:text="${#numbers.formatDecimal(sol, 1, 6)}"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                   
+                </div>
+                
+            
+
+                <!-- Botones de navegación -->
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <a th:href="@{/unit3/formseidel}" class="btn btn-success me-2">Resolver Otro Sistema</a>
+                        <a th:href="@{/}" class="btn btn-outline-secondary"> Volver al Menú Principal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

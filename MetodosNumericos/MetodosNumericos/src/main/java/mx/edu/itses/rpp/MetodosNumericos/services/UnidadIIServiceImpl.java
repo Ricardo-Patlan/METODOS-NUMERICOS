@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public abstract class UnidadIIServiceImpl implements UnidadIIService {
+public  class UnidadIIServiceImpl implements UnidadIIService {
 
     @Override
     public ArrayList<Biseccion> AlgoritmoBiseccion(Biseccion biseccion) {
